@@ -1,0 +1,46 @@
+{
+  "projects": [
+    {
+      "name": "Onboarding Revamp",
+      "owner": "Maya Chen",
+      "status": "On Track",
+      "recentActivity": "Completed usability review and moved copy updates into implementation.",
+      "priority": "High"
+    },
+    {
+      "name": "Analytics Refresh",
+      "owner": "Jordan Patel",
+      "status": "At Risk",
+      "recentActivity": "Waiting on event naming decisions before final dashboard wiring.",
+      "priority": "Medium"
+    },
+    {
+      "name": "Mobile Checkout",
+      "owner": "Sam Rivera",
+      "status": "Blocked",
+      "recentActivity": "Payment provider sandbox outage is blocking end-to-end testing.",
+      "priority": "High"
+    },
+    {
+      "name": "Knowledge Base Cleanup",
+      "owner": "Avery Brooks",
+      "status": "Done",
+      "recentActivity": "Published the reorganized article categories and archived stale content.",
+      "priority": "Low"
+    },
+    {
+      "name": "Partner Portal Beta",
+      "owner": "Noah Kim",
+      "status": "On Track",
+      "recentActivity": "Invited the first partner cohort and confirmed onboarding schedule.",
+      "priority": "Medium"
+    },
+    {
+      "name": "Security Review",
+      "owner": "Priya Shah",
+      "status": "At Risk",
+      "recentActivity": "Additional dependency findings were assigned for remediation.",
+      "priority": "Low"
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Project Pulse</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <h1>Project Pulse</h1>
+        <p class="site-header__subtitle">A quick dashboard for tracking project health, ownership, and recent updates.</p>
+      </div>
+    </header>
+
+    <div id="dashboard-status" class="dashboard-status" aria-live="polite">Loading projects...</div>
+    <main class="dashboard" aria-label="Project status dashboard"></main>
+
+    <script>
+      function toModifier(value) {
+        return String(value).trim().toLowerCase().replace(/\s+/g, "-");
+      }
+
+      function createLabeledText(label, value, className) {
+        const paragraph = document.createElement("p");
+        paragraph.className = className;
+
+        const labelElement = document.createElement("span");
+        labelElement.className = `${className}-label`;
+        labelElement.textContent = `${label}: `;
+
+        const valueElement = document.createElement("span");
+        valueElement.className = `${className}-value`;
+        valueElement.textContent = value;
+
+        paragraph.append(labelElement, valueElement);
+        return paragraph;
+      }
+
+      function createProjectCard(project) {
+        const card = document.createElement("article");
+        card.className = "project-card";
+
+        const name = document.createElement("h2");
+        name.className = "project-card__name";
+        name.textContent = project.name;
+
+        const owner = document.createElement("p");
+        owner.className = "project-card__owner";
+        owner.textContent = project.owner;
+
+        const status = createLabeledText("Status", project.status, "project-card__status");
+        status.classList.add(`status--${toModifier(project.status)}`);
+
+        const activity = createLabeledText("Recent activity", project.recentActivity, "project-card__activity");
+
+        const priority = createLabeledText("Priority", project.priority, "project-card__priority");
+        priority.classList.add(`priority--${toModifier(project.priority)}`);
+
+        card.append(name, owner, status, activity, priority);
+        return card;
+      }
+
+      function isValidProject(project) {
+        const requiredFields = ["name", "owner", "status", "recentActivity", "priority"];
+        return requiredFields.every((field) => typeof project[field] === "string" && project[field].trim() !== "");
+      }
+
+      function renderProjects(projects, dashboard, statusRegion) {
+        dashboard.replaceChildren();
+
+        if (projects.length === 0) {
+          statusRegion.textContent = "No projects to display.";
+          return;
+        }
+
+        const fragment = document.createDocumentFragment();
+        projects.forEach((project) => {
+          fragment.append(createProjectCard(project));
+        });
+
+        dashboard.append(fragment);
+        statusRegion.textContent = `${projects.length} projects loaded.`;
+      }
+
+      async function loadProjects() {
+        const dashboard = document.querySelector(".dashboard");
+        const statusRegion = document.getElementById("dashboard-status");
+
+        try {
+          const response = await fetch("./project-data.json");
+
+          if (!response.ok) {
+            throw new Error(`Project data request failed with status ${response.status}.`);
+          }
+
+          const data = await response.json();
+
+          if (!Array.isArray(data.projects)) {
+            throw new Error("Project data must include a projects array.");
+          }
+
+          const validProjects = data.projects.filter((project, index) => {
+            const valid = isValidProject(project);
+
+            if (!valid) {
+              console.warn(`Skipping malformed project at index ${index}.`);
+            }
+
+            return valid;
+          });
+
+          renderProjects(validProjects, dashboard, statusRegion);
+        } catch (error) {
+          dashboard.replaceChildren();
+          statusRegion.textContent = "Unable to load project data. Please check project-data.json and try again.";
+          console.error(error);
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", loadProjects);
+    </script>
+  </body>
+</html>
